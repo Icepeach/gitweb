@@ -1,2 +1,3 @@
+gitweb.git	Icepeach
 new_repo.git 	Icepeach
-test.git 	Rostrict
+test1.git 	Rostrict

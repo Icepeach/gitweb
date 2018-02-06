@@ -82,7 +82,7 @@ our $GIT = "D:/Program Files/Git/mingw32/libexec/git-core/git.exe";
 
 # absolute fs-path which will be prepended to the project path
 #our $projectroot = "/pub/scm";
-our $projectroot = "D:/Icepeach_Git_Server/git";
+our $projectroot = "/pub/git";
 
 # fs traversing limit for getting project list
 # the number is relative to the projectroot
@@ -1964,6 +1964,7 @@ sub mode_str {
 		return 'm---------';
 	} elsif (S_ISDIR($mode & S_IFMT)) {
 		return 'drwxr-xr-x';
+	# The function S_ISLNK does not work in Windows OS but leads to an error. //by icepeach
 	#} elsif (S_ISLNK($mode)) {
 	#	return 'lrwxrwxrwx';
 	} elsif (S_ISREG($mode)) {
@@ -3830,6 +3831,7 @@ sub git_get_tags_list {
 
 sub get_file_owner {
 	my $path = shift;
+
 	my ($dev, $ino, $mode, $nlink, $st_uid, $st_gid, $rdev, $size) = stat($path);
 	my ($name, $passwd, $uid, $gid, $quota, $comment, $gcos, $dir, $shell) = getpwuid($st_uid);
 	if (!defined $gcos) {
@@ -4155,8 +4157,6 @@ sub git_header_html {
 	                   -status=> $status, -expires => $expires)
 		unless ($opts{'-no_http_header'});
 	my $mod_perl_version = $ENV{'MOD_PERL'} ? " $ENV{'MOD_PERL'}" : '';
-
-
 	print <<EOF;
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -4703,7 +4703,6 @@ sub git_print_tree_entry {
 	# the mode of the entry, list is the name of the entry, an href,
 	# and link is the action links of the entry.
 
-        # This function S_ISLNK does not work in Windows OS but leads to an error. //by icepeach
 	print "<td class=\"mode\">" . mode_str($t->{'mode'}) . "</td>\n";
 	if (exists $t->{'size'}) {
 		print "<td class=\"size\">$t->{'size'}</td>\n";
