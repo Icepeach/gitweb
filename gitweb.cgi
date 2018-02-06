@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!D:/MiniProgs/wamp/bin/perl/bin/perl.exe
 
 # gitweb - simple web interface to track changes in git repositories
 #
@@ -78,11 +78,11 @@ sub evaluate_uri {
 
 # core git executable to use
 # this can just be "git" if your webserver has a sensible PATH
-our $GIT = "/mingw32/bin/git";
+our $GIT = "D:/Program Files/Git/mingw32/libexec/git-core/git.exe";
 
 # absolute fs-path which will be prepended to the project path
 #our $projectroot = "/pub/scm";
-our $projectroot = "/pub/git";
+our $projectroot = "D:/Icepeach_Git_Server/git";
 
 # fs traversing limit for getting project list
 # the number is relative to the projectroot
@@ -1964,8 +1964,8 @@ sub mode_str {
 		return 'm---------';
 	} elsif (S_ISDIR($mode & S_IFMT)) {
 		return 'drwxr-xr-x';
-	} elsif (S_ISLNK($mode)) {
-		return 'lrwxrwxrwx';
+	#} elsif (S_ISLNK($mode)) {
+	#	return 'lrwxrwxrwx';
 	} elsif (S_ISREG($mode)) {
 		# git cares only about the executable bit
 		if ($mode & S_IXUSR) {
@@ -1992,8 +1992,8 @@ sub file_type {
 		return "submodule";
 	} elsif (S_ISDIR($mode & S_IFMT)) {
 		return "directory";
-	} elsif (S_ISLNK($mode)) {
-		return "symlink";
+	#} elsif (S_ISLNK($mode)) {
+	#	return "symlink";
 	} elsif (S_ISREG($mode)) {
 		return "file";
 	} else {
@@ -2015,8 +2015,8 @@ sub file_type_long {
 		return "submodule";
 	} elsif (S_ISDIR($mode & S_IFMT)) {
 		return "directory";
-	} elsif (S_ISLNK($mode)) {
-		return "symlink";
+	#} elsif (S_ISLNK($mode)) {
+	#	return "symlink";
 	} elsif (S_ISREG($mode)) {
 		if ($mode & S_IXUSR) {
 			return "executable";
@@ -3830,7 +3830,6 @@ sub git_get_tags_list {
 
 sub get_file_owner {
 	my $path = shift;
-
 	my ($dev, $ino, $mode, $nlink, $st_uid, $st_gid, $rdev, $size) = stat($path);
 	my ($name, $passwd, $uid, $gid, $quota, $comment, $gcos, $dir, $shell) = getpwuid($st_uid);
 	if (!defined $gcos) {
@@ -4156,6 +4155,8 @@ sub git_header_html {
 	                   -status=> $status, -expires => $expires)
 		unless ($opts{'-no_http_header'});
 	my $mod_perl_version = $ENV{'MOD_PERL'} ? " $ENV{'MOD_PERL'}" : '';
+
+
 	print <<EOF;
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -4171,7 +4172,7 @@ EOF
 	# the stylesheet, favicon etc urls won't work correctly with path_info
 	# unless we set the appropriate base URL
 	if ($ENV{'PATH_INFO'}) {
-		print "<base href=\"".esc_url($base_url)."\" />\n";
+		print "<base href=\"".esc_url($base_url)."/\" />\n";
 	}
 	print_header_links($status);
 
@@ -4702,6 +4703,7 @@ sub git_print_tree_entry {
 	# the mode of the entry, list is the name of the entry, an href,
 	# and link is the action links of the entry.
 
+        # This function S_ISLNK does not work in Windows OS but leads to an error. //by icepeach
 	print "<td class=\"mode\">" . mode_str($t->{'mode'}) . "</td>\n";
 	if (exists $t->{'size'}) {
 		print "<td class=\"size\">$t->{'size'}</td>\n";
@@ -4711,25 +4713,26 @@ sub git_print_tree_entry {
 			$cgi->a({-href => href(action=>"blob", hash=>$t->{'hash'},
 			                       file_name=>"$basedir$t->{'name'}", %base_key),
 			        -class => "list"}, esc_path($t->{'name'}));
-		if (S_ISLNK(oct $t->{'mode'})) {
-			my $link_target = git_get_link_target($t->{'hash'});
-			if ($link_target) {
-				my $norm_target = normalize_link_target($link_target, $basedir);
-				if (defined $norm_target) {
-					print " -> " .
-					      $cgi->a({-href => href(action=>"object", hash_base=>$hash_base,
-					                             file_name=>$norm_target),
-					               -title => $norm_target}, esc_path($link_target));
-				} else {
-					print " -> " . esc_path($link_target);
-				}
-			}
-		}
+#		if (S_ISLNK(oct $t->{'mode'})) {
+#			my $link_target = git_get_link_target($t->{'hash'});
+#			if ($link_target) {
+#				my $norm_target = normalize_link_target($link_target, $basedir);
+#				if (defined $norm_target) {
+#					print " -> " .
+#					      $cgi->a({-href => href(action=>"object", hash_base=>$hash_base,
+#					                             file_name=>$norm_target),
+#					               -title => $norm_target}, esc_path($link_target));
+#				} else {
+#					print " -> " . esc_path($link_target);
+#				}
+#			}
+#		}
 		print "</td>\n";
 		print "<td class=\"link\">";
 		print $cgi->a({-href => href(action=>"blob", hash=>$t->{'hash'},
 		                             file_name=>"$basedir$t->{'name'}", %base_key)},
 		              "blob");
+
 		if ($have_blame) {
 			print " | " .
 			      $cgi->a({-href => href(action=>"blame", hash=>$t->{'hash'},
