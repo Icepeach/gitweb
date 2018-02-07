@@ -3830,6 +3830,7 @@ sub git_get_tags_list {
 ## filesystem-related functions
 
 sub get_file_owner {
+	return 'windows';
 	my $path = shift;
 
 	my ($dev, $ino, $mode, $nlink, $st_uid, $st_gid, $rdev, $size) = stat($path);
